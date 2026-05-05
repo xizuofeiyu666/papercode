@@ -1,0 +1,285 @@
+# Extra Modules YAML配置示例
+# 本文件展示了从extra_modules移植的所有模块在YAML中的配置写法
+
+# ========== C3k2 变体模块 (10个) ==========
+# C3k2_KW - C3k2核仓库模块
+- [-1, 2, C3k2_KW, [256, False, 0.25]]  # 完整格式：输出通道数, shortcut, 通道缩放比例
+- [-1, 2, C3k2_KW, [512, True]]         # 省略通道缩放比例
+- [-1, 2, C3k2_KW, [512, False]]        # 不带shortcut
+
+# C3k2_DySnakeConv - 动态蛇形卷积
+- [-1, 2, C3k2_DySnakeConv, [1024, True]]  # 输出通道数, shortcut
+
+# C3k2_OREPA - OREPA重参数化
+- [-1, 2, C3k2_OREPA, [256, False, 0.25]]  # 输出通道数, shortcut, 扩展因子
+- [-1, 2, C3k2_OREPA, [512, True]]         # 省略扩展因子，使用默认值
+- [-1, 2, C3k2_OREPA, [1024, True]]        # 1024通道，有shortcut
+
+# C3k2_REPVGGOREPA - RepVGG+OREPA
+- [-1, 2, C3k2_REPVGGOREPA, [256, False, 0.25]]  # 输出通道数, shortcut, 扩展系数
+- [-1, 2, C3k2_REPVGGOREPA, [512, True]]         # 使用shortcut，默认扩展系数
+- [-1, 2, C3k2_REPVGGOREPA, [1024, True]]        # 更大通道数配置
+
+# C3k2_RFAConv - RFA卷积
+- [-1, 2, C3k2_RFAConv, [256, False, 0.25]]  # 输出通道数, shortcut, 扩展因子
+- [-1, 2, C3k2_RFAConv, [512, True]]         # 使用shortcut，默认扩展因子
+- [-1, 2, C3k2_RFAConv, [1024, True]]        # 更大通道数，使用shortcut
+
+# C3k2_RFCBAMConv - RFA+CBAM卷积
+- [-1, 2, C3k2_RFCBAMConv, [256, False, 0.25]]  # 输出通道数, shortcut, 扩展因子
+- [-1, 2, C3k2_RFCBAMConv, [512, True]]         # 使用shortcut，默认扩展因子
+- [-1, 2, C3k2_RFCBAMConv, [1024, True]]        # 1024通道，有shortcut
+
+# C3k2_RFCAConv - RFA+CA卷积
+- [-1, 2, C3k2_RFCAConv, [256, False, 0.25]]  # 输出通道数, shortcut, 通道缩放比例
+- [-1, 2, C3k2_RFCAConv, [512, False]]        # 不带缩放比例参数
+- [-1, 2, C3k2_RFCAConv, [1024, True]]        # 使用shortcut
+
+# C3k2_VSS - 视觉状态空间
+- [-1, 2, C3k2_VSS, [256, False, 0.25]]  # 输出通道数, shortcut, 缩放因子
+- [-1, 2, C3k2_VSS, [512, True]]         # 省略第三个参数
+
+# C3k2_wConv - 宽度卷积
+- [-1, 2, C3k2_wConv, [256, [0.9], False, 0.25]]  # 输出通道数, wConv参数, shortcut, 额外参数
+- [-1, 2, C3k2_wConv, [512, [0.9], True]]         # 省略最后一个参数
+- [-1, 2, C3k2_wConv, [512, [0.9], False]]        # 不使用shortcut
+
+# C3k2_FourierConv - 傅里叶卷积
+- [-1, 2, C3k2_FourierConv, [256, [160, 160], False, 0.25]]  # 输出通道数, 特征图尺寸[H,W], shortcut, 额外参数
+- [-1, 2, C3k2_FourierConv, [512, [40, 40], True]]           # 带shortcut的配置
+- [-1, 2, C3k2_FourierConv, [1024, [20, 20], True]]          # 更大通道数配置
+
+# ========== 标准卷积模块 (10个) ==========
+# RFAConv - 感受野注意力卷积
+- [-1, 1, RFAConv, [64, 3, 2]]   # 输出通道数, 卷积核大小, 步长
+- [-1, 1, RFAConv, [128, 3, 2]]  # 用于下采样
+- [-1, 1, RFAConv, [256, 3, 1]]  # 步长为1的配置
+
+# RFCBAMConv - RFA+CBAM卷积
+- [-1, 1, RFCBAMConv, [64, 3, 2]]   # 输出通道数, 卷积核大小, 步长
+- [-1, 1, RFCBAMConv, [128, 3, 2]]  # 用于下采样
+- [-1, 1, RFCBAMConv, [256, 3, 1]]  # 步长为1的配置
+
+# RFCAConv - RFA+通道注意力卷积
+- [-1, 1, RFCAConv, [64, 3, 2]]   # 输出通道数, 卷积核大小, 步长
+- [-1, 1, RFCAConv, [128, 3, 2]]  # 用于下采样
+- [-1, 1, RFCAConv, [256, 3, 1]]  # 步长为1的配置
+
+# VSSBlock_YOLO - Mamba视觉状态空间块
+- [-1, 3, VSSBlock_YOLO, [128]]   # 输出通道数（支持重复参数n>1）
+- [-1, 9, VSSBlock_YOLO, [512]]   # 重复9次，输出512通道
+- [-1, 3, VSSBlock_YOLO, [1024]]  # 输出1024通道
+
+# XSSBlock - 扩展状态空间块
+- [-1, 3, XSSBlock, [256]]   # 输出通道数（支持重复参数n>1）
+- [-1, 3, XSSBlock, [512]]   # 512通道输出
+- [-1, 3, XSSBlock, [1024]]  # 1024通道输出
+
+# CSP_FreqSpatial - 频空间CSP模块
+- [-1, 2, CSP_FreqSpatial, [128]]   # 输出通道数（支持重复参数n>1）
+- [-1, 2, CSP_FreqSpatial, [256]]   # 256通道输出
+- [-1, 2, CSP_FreqSpatial, [512]]   # 512通道输出
+- [-1, 2, CSP_FreqSpatial, [1024]]  # 1024通道输出
+
+# FeaturePyramidSharedConv - 特征金字塔共享卷积
+- [-1, 1, FeaturePyramidSharedConv, [1024]]  # 输出通道数
+
+# DSConv_YOLO13 - YOLO13深度可分离卷积
+- [-1, 1, DSConv_YOLO13, [64, 3, 1]]   # 输出通道数, 卷积核大小, 步长
+- [-1, 1, DSConv_YOLO13, [128, 3, 2]]  # 用于下采样
+
+# wConv2d - 宽度卷积2D
+- [-1, 1, wConv2d, [64, 3, [0.9], 2]]   # 输出通道数, 卷积核大小, wConv参数, 步长
+- [-1, 1, wConv2d, [128, 3, [0.9], 1]]  # 步长为1的配置
+
+# FourierConv - 傅里叶卷积
+- [-1, 1, FourierConv, [256, [80, 80], 2]]   # 输出通道数, 特征图尺寸[H,W], 步长
+- [-1, 1, FourierConv, [512, [40, 40], 2]]   # P4/16尺度
+- [-1, 1, FourierConv, [1024, [20, 20], 2]]  # P5/32尺度
+
+# ========== 注意力机制模块 (44个) ==========
+# EMA - 指数移动平均注意力
+- [-1, 1, EMA, []]  # 无参数
+
+# SpatialAttention - 空间注意力
+- [-1, 1, SpatialAttention, [7]]  # 卷积核大小
+
+# BiLevelRoutingAttention - 双层路由注意力
+- [-1, 1, BiLevelRoutingAttention, [8, 7]]  # num_heads, window_size
+
+# BiLevelRoutingAttention_nchw - 双层路由注意力(NCHW格式)
+- [-1, 1, BiLevelRoutingAttention_nchw, [8, 7]]  # num_heads, window_size
+
+# TripletAttention - 三元组注意力
+- [-1, 1, TripletAttention, []]  # 无参数
+
+# CoordAtt - 坐标注意力
+- [-1, 1, CoordAtt, [32]]  # reduction ratio
+
+# CBAM - 卷积块注意力模块
+- [-1, 1, CBAM, []]  # 无参数
+
+# BAMBlock - BAM注意力块
+- [-1, 1, BAMBlock, []]  # 无参数
+
+# LSKBlock - 大核选择性注意力块
+- [-1, 1, LSKBlock, []]  # 无参数
+
+# ScConv - 自校准卷积
+- [-1, 1, ScConv, []]  # 无参数
+
+# LAWDS - 局部自适应权重下采样
+- [-1, 1, LAWDS, []]  # 无参数
+
+# EMSConv - 高效多尺度卷积
+- [-1, 1, EMSConv, []]  # 无参数
+
+# EMSConvP - 高效多尺度卷积Plus
+- [-1, 1, EMSConvP, []]  # 无参数
+
+# SEAttention - SE注意力
+- [-1, 1, SEAttention, [16]]  # reduction ratio
+
+# CPCA - 通道像素卷积注意力
+- [-1, 1, CPCA, []]  # 无参数
+
+# Partial_conv3 - 部分卷积3
+- [-1, 1, Partial_conv3, []]  # 无参数
+
+# FocalModulation - 焦点调制
+- [-1, 1, FocalModulation, []]  # 无参数
+
+# EfficientAttention - 高效注意力
+- [-1, 1, EfficientAttention, []]  # 无参数
+
+# MPCA - 多路径通道注意力
+- [-1, 1, MPCA, []]  # 无参数
+
+# deformable_LKA - 可变形大核注意力
+- [-1, 1, deformable_LKA, []]  # 无参数
+
+# EffectiveSEModule - 有效SE模块
+- [-1, 1, EffectiveSEModule, []]  # 无参数
+
+# LSKA - 大尺度核注意力
+- [-1, 1, LSKA, []]  # 无参数
+
+# SegNext_Attention - SegNext注意力
+- [-1, 1, SegNext_Attention, []]  # 无参数
+
+# DAttention - 动态注意力
+- [-1, 1, DAttention, [[20, 20]]]  # 特征图尺寸[H,W]
+
+# MLCA - 多层通道注意力
+- [-1, 1, MLCA, []]  # 无参数
+
+# TransNeXt_AggregatedAttention - TransNeXt聚合注意力
+- [-1, 1, TransNeXt_AggregatedAttention, [160, 8]]  # 特征图尺寸, 头数
+- [-1, 1, TransNeXt_AggregatedAttention, [80, 4]]   # P3尺度
+- [-1, 1, TransNeXt_AggregatedAttention, [40, 2]]   # P4尺度
+
+# FocusedLinearAttention - 聚焦线性注意力
+- [-1, 1, FocusedLinearAttention, []]  # 无参数
+
+# LocalWindowAttention - 局部窗口注意力
+- [-1, 1, LocalWindowAttention, []]  # 无参数
+
+# ChannelAttention_HSFPN - HSFPN通道注意力
+- [-1, 1, ChannelAttention_HSFPN, []]  # 无参数
+
+# ELA_HSFPN - HSFPN高效局部注意力
+- [-1, 1, ELA_HSFPN, []]       # 无参数
+- [-1, 1, ELA_HSFPN, [False]]  # 带参数
+
+# CA_HSFPN - HSFPN通道注意力
+- [-1, 1, CA_HSFPN, []]          # 无参数
+- [-1, 1, CA_HSFPN, [8, False]]  # 带参数
+
+# CAA_HSFPN - HSFPN通道聚合注意力
+- [-1, 1, CAA_HSFPN, []]       # 无参数
+- [-1, 1, CAA_HSFPN, [False]]  # 带参数
+
+# DySample - 动态采样
+- [-1, 1, DySample, [2, 'lp']]  # 采样倍数, 采样类型
+
+# CARAFE - 内容感知特征重组
+- [-1, 1, CARAFE, []]  # 无参数
+
+# CAA - 通道聚合注意力
+- [-1, 1, CAA, []]  # 无参数
+
+# ELA - 高效局部注意力
+- [-1, 1, ELA, []]  # 无参数
+
+# CAFM - 通道注意力特征融合
+- [-1, 1, CAFM, []]  # 无参数
+
+# AFGCAttention - 自适应特征门控通道注意力
+- [-1, 1, AFGCAttention, []]  # 无参数
+
+# EUCB - 增强统一通道块
+- [-1, 1, EUCB, []]  # 无参数
+
+# EfficientChannelAttention - 高效通道注意力
+- [-1, 1, EfficientChannelAttention, []]  # 无参数
+
+# ContrastDrivenFeatureAggregation - 对比驱动特征聚合
+- [-1, 1, ContrastDrivenFeatureAggregation, []]  # 无参数
+
+# FSA - 特征选择注意力
+- [-1, 1, FSA, [40]]  # 特征图尺寸
+- [-1, 1, FSA, [80]]  # P3尺度
+- [-1, 1, FSA, [20]]  # P5尺度
+
+# AttentiveLayer - 注意力层
+- [-1, 1, AttentiveLayer, [[20, 20]]]  # 特征图尺寸[H,W]
+
+# EUCB_SC - 增强统一通道块-空间通道
+- [-1, 1, EUCB_SC, []]  # 无参数
+
+# ========== HSFPN模块 ==========
+# HFP - 高频感知模块
+- [-1, 1, HFP, []]                        # 默认参数
+- [-1, 1, HFP, [[0.25, 0.25], [8, 8]]]   # 自定义ratio和patch
+
+# SDP - 空间依赖感知模块（需要两个输入）
+- [[4, 8], 1, SDP, [[256, 512], 256, [4, 4]]]  # [in_dims], dim, patch_size
+
+# ========== 完整backbone示例 ==========
+# 展示如何在实际配置中使用extra_modules
+backbone:
+  # 标准卷积起始
+  - [-1, 1, Conv, [64, 3, 2]]              # 0-P1/2
+  
+  # 使用RFA系列卷积替代标准卷积
+  - [-1, 1, RFAConv, [128, 3, 2]]          # 1-P2/4
+  
+  # 使用C3k2变体
+  - [-1, 2, C3k2_OREPA, [256, False, 0.25]] # 2
+  
+  # 添加注意力机制
+  - [-1, 1, CBAM, []]                      # 3
+  
+  # 使用Mamba VSS块
+  - [-1, 3, VSSBlock_YOLO, [256]]          # 4
+  
+  # 继续backbone
+  - [-1, 1, Conv, [256, 3, 2]]             # 5-P3/8
+  - [-1, 2, C3k2_VSS, [512, False, 0.25]]  # 6
+  
+  # 添加高效注意力
+  - [-1, 1, EfficientAttention, []]        # 7
+  
+  # 使用频空间CSP
+  - [-1, 2, CSP_FreqSpatial, [512]]        # 8
+  
+  # SPPF结束
+  - [-1, 1, SPPF, [512, 5]]                # 9
+
+# 注意事项：
+# 1. 所有模块都需要在tasks.py的NNexpend区域正确解析
+# 2. C3k2_KW需要warehouse_manager支持
+# 3. SDP模块需要两个输入（双路径融合）
+# 4. 注意力模块通常保持通道数不变
+# 5. 部分模块支持重复参数n>1（如VSSBlock_YOLO、XSSBlock、CSP_FreqSpatial）
+# 6. 特征图尺寸参数（如[20,20]）需要根据实际输入尺寸调整

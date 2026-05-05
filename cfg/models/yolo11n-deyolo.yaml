@@ -1,0 +1,67 @@
+# Ultralytics YOLO11 DEYOLO Multi-Modal Configuration
+# 双路输入(RGB+IR) + 双骨干 + DEA跨模态注意力 + BiFocus
+
+# Parameters
+nc: 80  # number of classes
+scales:  # [depth, width, max_channels]
+  n: [0.33, 0.25, 1024]
+  s: [0.33, 0.50, 1024]
+  m: [0.67, 0.75, 768]
+  l: [1.00, 1.00, 512]
+  x: [1.00, 1.25, 512]
+
+# Backbone: RGB(0-9) + IR(10-19)
+backbone:
+  # RGB path
+  - [-1, 1, Conv, [64, 3, 2], 'RGB']      # 0-P1/2
+  - [-1, 1, Conv, [128, 3, 2]]            # 1-P2/4
+  - [-1, 3, C2f_BiFocus, [128, True]]     # 2
+  - [-1, 1, Conv, [256, 3, 2]]            # 3-P3/8
+  - [-1, 6, C2f, [256, True]]             # 4
+  - [-1, 1, Conv, [512, 3, 2]]            # 5-P4/16
+  - [-1, 6, C2f, [512, True]]             # 6
+  - [-1, 1, Conv, [1024, 3, 2]]           # 7-P5/32
+  - [-1, 3, C2f, [1024, True]]            # 8
+  - [-1, 1, SPPF, [1024, 5]]              # 9
+
+  # IR path
+  - [-1, 1, Conv, [64, 3, 2], 'X']        # 10-P1/2
+  - [-1, 1, Conv, [128, 3, 2]]            # 11-P2/4
+  - [-1, 3, C2f_BiFocus, [128, True]]     # 12
+  - [-1, 1, Conv, [256, 3, 2]]            # 13-P3/8
+  - [-1, 6, C2f, [256, True]]             # 14
+  - [-1, 1, Conv, [512, 3, 2]]            # 15-P4/16
+  - [-1, 6, C2f, [512, True]]             # 16
+  - [-1, 1, Conv, [1024, 3, 2]]           # 17-P5/32
+  - [-1, 3, C2f, [1024, True]]            # 18
+  - [-1, 1, SPPF, [1024, 5]]              # 19
+
+# Head: DEA融合 + FPN/PAN + Detect
+head:
+  # DEA attention (P3/P4/P5)
+  # DEA(channel, kernel_size, p_kernel=None, m_kernel=None, reduction=16)
+  # 原配置参数顺序有误（将 reduction 与 kernel_size 位置颠倒，且把 kernel_size 误传给 p_kernel 导致解包报错）。
+  # 按当前模块签名修正为：显式传入 kernel_size，并保持 p_kernel/m_kernel 使用默认，reduction=16。
+  - [[4, 14], 1, DEA, [null, 80, null, null, 16]]      # 20 (channel auto-infer)
+  - [[6, 16], 1, DEA, [null, 40, null, null, 16]]      # 21 (channel auto-infer)
+  - [[9, 19], 1, DEA, [null, 20, null, null, 16]]      # 22 (channel auto-infer)
+
+  # Top-down path (FPN)
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]   # 23
+  - [[-1, 21], 1, Concat, [1]]                    # 24
+  - [-1, 3, C2f, [512, False]]                    # 25
+
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]   # 26
+  - [[-1, 20], 1, Concat, [1]]                    # 27
+  - [-1, 3, C2f, [256, False]]                    # 28 (P3)
+
+  # Bottom-up path (PAN)
+  - [-1, 1, Conv, [256, 3, 2]]                    # 29
+  - [[-1, 25], 1, Concat, [1]]                    # 30 (P4)
+  - [-1, 3, C2f, [512, False]]                    # 31
+
+  - [-1, 1, Conv, [512, 3, 2]]                    # 32
+  - [[-1, 22], 1, Concat, [1]]                    # 33 (P5)
+  - [-1, 3, C2f, [1024, False]]                   # 34
+
+  - [[28, 31, 34], 1, Detect, [nc]]               # 35
